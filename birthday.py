@@ -8,6 +8,9 @@ from bs4 import BeautifulSoup
 import datetime
 import time
 import telepot
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
 
 class element_has_css_class(object):
   def __init__(self, locator, css_class):
@@ -33,7 +36,7 @@ def hut(date, id_telegram, user, pw):
 	button.click()
 	wait = WebDriverWait(driver, 10)
 	element = wait.until(element_has_css_class((By.ID, 'myCarousel'), "carousel slide"))
-	hut = driver.find_element_by_xpath("//div[6]/div[2]/div[2]/div")
+	hut = driver.find_element_by_xpath("//*[@class='carousel slide']")
 	source_code = hut.get_attribute('innerHTML')
 	html_string = str(source_code).replace('							<div>','							<div class="nik">')
 	html_page = BeautifulSoup(html_string, 'html.parser')
@@ -47,19 +50,22 @@ def hut(date, id_telegram, user, pw):
 		text = text + temp
 	bot.sendMessage(id_telegram, text, 'Markdown')
 
-
 id_telegram = '***ID Telegram***'
 token = '***Toket BOT Telegram***'
-user = '***Username***'
-pw = '***Password***'
+
+cred = credentials.Certificate('***Directory Certificate***')
+firebase_admin.initialize_app(cred)
+db = firestore.client()
+doc = db.collection(u'***DB***').document(u'***Table***').get().to_dict()
 
 bot = telepot.Bot(token)
 hari = datetime.datetime.now()
 print('Starting...')
-hut(hari.strftime("%b, %d %Y"), id_telegram, user, pw)
+hut(hari.strftime("%b, %d %Y"), id_telegram, doc['username'], doc['password'])
 
 while 1:
 	hari = datetime.datetime.now()
 	if hari.strftime("%H:%M") == '09:00':
-		hut(hari.strftime("%b, %d %Y"), id_telegram, user, pw)
+		doc = db.collection(u'***DB***').document(u'***Table***').get().to_dict()
+		hut(hari.strftime("%b, %d %Y"), id_telegram, doc['username'], doc['password'])
 	time.sleep(60)
