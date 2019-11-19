@@ -51,7 +51,7 @@ def hut(date, id_telegram, user, pw):
 	bot.sendMessage(id_telegram, text, 'Markdown')
 
 id_telegram = '***ID Telegram***'
-token = '***Toket BOT Telegram***'
+token = '***Token BOT Telegram***'
 
 cred = credentials.Certificate('***Directory Certificate***')
 firebase_admin.initialize_app(cred)
